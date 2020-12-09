@@ -242,7 +242,7 @@ ma.glasnost.orika.writeSourceFilesToPath=D:/growUp/test
 
 和 cglib beanCopier 不同，orika mapper 生成了三个文件。根本原因在于 **orika mapper 是深度复制**，用户对象中的部门对象和岗位对象也会生成新的实例对象并拷贝属性。
 
-![orika_class](D:\growUp\git_repository\performance-testing\beanCopy-tool-demo\img\orika_class.png)
+![orika_class](https://img2020.cnblogs.com/blog/1731892/202012/1731892-20201209134026787-321701029.png)
 
 打开其中一个文件，可以看到，普通属性直接赋值，像部门对象这种，会调用`BoundMapperFacade`继续拷贝。
 
@@ -333,4 +333,4 @@ cglib beanCopier 和 orika mapper 使用动态代理生成包含 setter/getter �
 
 > 相关源码请移步：[ beanCopy-tool-demo](https://github.com/ZhangZiSheng001/beanCopy-tool-demo)
 
-> 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/13948414.html](https://www.cnblogs.com/ZhangZiSheng001/p/13948414.html)
+> 本文为原创文章，转载请附上原文出处链接：[https://www.cnblogs.com/ZhangZiSheng001/p/14108080.html ](https://www.cnblogs.com/ZhangZiSheng001/p/14108080.html )
