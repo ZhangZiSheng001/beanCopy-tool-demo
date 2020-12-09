@@ -309,11 +309,11 @@ java -ea -jar target/benchmarks.jar -f 1 -t 1 -wi 10 -i 10
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Throughput, ops/time
 Benchmark                          Mode  Cnt      Score     Error   Units
-BeanCopyTest.testApacheBeanUtils  thrpt   10      4.184 ±   0.033  ops/ms
-BeanCopyTest.testCglibBeanCopier  thrpt   10   7583.844 ±  79.572  ops/ms
-BeanCopyTest.testDeadCode         thrpt   10  15830.863 ± 601.998  ops/ms
-BeanCopyTest.testOrikaBeanCopy    thrpt   10   1305.527 ±  45.422  ops/ms
-BeanCopyTest.testSpringBeanUtils  thrpt   10     92.738 ±  17.369  ops/ms
+BeanCopyTest.testApacheBeanUtils  thrpt   10      4.181 ±   0.035  ops/ms
+BeanCopyTest.testCglibBeanCopier  thrpt   10   7640.876 ±  36.674  ops/ms
+BeanCopyTest.testDeadCode         thrpt   10  12419.576 ± 195.084  ops/ms
+BeanCopyTest.testOrikaBeanCopy    thrpt   10   1458.256 ±  25.725  ops/ms
+BeanCopyTest.testSpringBeanUtils  thrpt   10     87.586 ±   6.582  ops/ms
 ```
 
 根据测试结果，对象拷贝速度方面：
