@@ -229,12 +229,21 @@ public class BeanCopyTest {
      * @throws Exception
      */
     @Benchmark
-    public UserVO testCglibBeanCopier(CommonState commonState) throws Exception {
-        BeanCopier copier = BeanCopier.create(commonState.user.getClass(), UserVO.class, false);
+    public UserVO testCglibBeanCopier(CommonState commonState, CglibBeanCopierState cglibBeanCopierState) throws Exception {
+        BeanCopier copier = cglibBeanCopierState.copier;
         UserVO userVO = new UserVO();
         copier.copy(commonState.user, userVO, null);
         assert "zzs0".equals(userVO.getName());
         return userVO;
+    }
+    
+    @State(Scope.Benchmark)
+    public static class CglibBeanCopierState {
+        BeanCopier copier;
+        @Setup(Level.Trial)
+        public void prepare() {
+            copier = BeanCopier.create(User.class, UserVO.class, false);
+        }
     }
     
     /**

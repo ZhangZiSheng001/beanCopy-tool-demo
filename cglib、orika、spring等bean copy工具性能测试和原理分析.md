@@ -142,31 +142,25 @@ spring beanUtils 的 API 和 apache commons beanUtils 差不多，也是简单�
 
 ## cglib beanCopier
 
-cglib beanCopier 需要先创建一个`BeanCopier`（这个对象会缓存起来，不需要每次都创建），然后再执行 copy 操作。它也支持设置自定义转换器，需要注意的是，**这种转换器仅限当前调用有效，而且，我们需要在同一个转换器里处理所有类型的转换**。
+cglib beanCopier 需要先创建一个`BeanCopier`，然后再执行 copy 操作。它也支持设置自定义转换器，但是，**这种转换器仅限当前调用有效，而且，我们需要在同一个转换器里处理所有类型的转换**。使用 cglib beanCopier 需要注意，**`BeanCopier`对象可复用，不需要重复创建**。
 
 ```java
     @Benchmark
-    public UserVO testCglibBeanCopier(CommonState commonState) throws Exception {
-        BeanCopier copier = BeanCopier.create(commonState.user.getClass(), UserVO.class, false);
+    public UserVO testCglibBeanCopier(CommonState commonState, CglibBeanCopierState cglibBeanCopierState) throws Exception {
+        BeanCopier copier = cglibBeanCopierState.copier;
         UserVO userVO = new UserVO();
         copier.copy(commonState.user, userVO, null);
         assert "zzs0".equals(userVO.getName());
         return userVO;
-        
-        // 设置自定义转换器
-        /**BeanCopier copier = BeanCopier.create(commonState.user.getClass(), UserVO.class, true);
-        UserVO userVO = new UserVO();
-        copier.copy(commonState.user, userVO, new Converter() {
-            @Override
-            public Object convert(Object value, Class target, Object context) {
-                if(Integer.class.isInstance(value)) {
-                    System.err.println("赋值Integer属性");
-                }
-                return value;
-            }
-        });
-        assert "zzs0".equals(userVO.getName());
-        return userVO;**/
+    }
+    
+    @State(Scope.Benchmark)
+    public static class CglibBeanCopierState {
+        BeanCopier copier;
+        @Setup(Level.Trial)
+        public void prepare() {
+            copier = BeanCopier.create(User.class, UserVO.class, false);
+        }
     }
 ```
 
@@ -309,11 +303,11 @@ java -ea -jar target/benchmarks.jar -f 1 -t 1 -wi 10 -i 10
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Throughput, ops/time
 Benchmark                          Mode  Cnt      Score     Error   Units
-BeanCopyTest.testApacheBeanUtils  thrpt   10      4.181 ±   0.035  ops/ms
-BeanCopyTest.testCglibBeanCopier  thrpt   10   7640.876 ±  36.674  ops/ms
-BeanCopyTest.testDeadCode         thrpt   10  12419.576 ± 195.084  ops/ms
-BeanCopyTest.testOrikaBeanCopy    thrpt   10   1458.256 ±  25.725  ops/ms
-BeanCopyTest.testSpringBeanUtils  thrpt   10     87.586 ±   6.582  ops/ms
+BeanCopyTest.testApacheBeanUtils  thrpt   10      4.077 ±   0.046  ops/ms
+BeanCopyTest.testCglibBeanCopier  thrpt   10  12158.830 ± 112.239  ops/ms
+BeanCopyTest.testDeadCode         thrpt   10  12393.230 ± 219.693  ops/ms
+BeanCopyTest.testOrikaBeanCopy    thrpt   10   1424.492 ±  16.948  ops/ms
+BeanCopyTest.testSpringBeanUtils  thrpt   10     88.815 ±   1.235  ops/ms
 ```
 
 根据测试结果，对象拷贝速度方面：
@@ -322,14 +316,13 @@ BeanCopyTest.testSpringBeanUtils  thrpt   10     87.586 ±   6.582  ops/ms
 
 由于 apache commons beanUtils 和 spring beanUtils 使用了大量反射，所以速度较慢；
 
-cglib beanCopier 和 orika mapper 使用动态代理生成包含 setter/getter 的代码的代理类，不需要调用反射来赋值，所以，速度较快。orika mapper 是深度复制，需要额外处理对象类型的属性转换，也增加了部分开销。
+cglib beanCopier 和 orika mapper 使用动态代理生成包含 setter/getter 的代码的代理类，不需要调用反射来赋值，所以，速度较快。cglib beanCopier 的速度和手动拷贝不相上下。
 
-
+orika mapper 是深度复制，需要额外处理对象类型的属性转换，也增加了部分开销。
 
 以上数据仅供参考。感谢阅读。
 
-
-
+> 2021-05-28 更改
 
 > 相关源码请移步：[ beanCopy-tool-demo](https://github.com/ZhangZiSheng001/beanCopy-tool-demo)
 
